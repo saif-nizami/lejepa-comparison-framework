@@ -1,0 +1,32 @@
+"""
+Training metrics.
+"""
+
+from __future__ import annotations
+
+
+class AverageMeter:
+    """
+    Computes running average.
+    """
+
+    def __init__(self):
+
+        self.reset()
+
+    def reset(self):
+
+        self.sum = 0.0
+        self.count = 0
+        self.avg = 0.0
+
+    def update(
+        self,
+        value,
+        n: int = 1,
+    ):
+
+        self.sum += value * n
+        self.count += n
+
+        self.avg = self.sum / self.count
