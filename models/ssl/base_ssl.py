@@ -1,100 +1,3 @@
-# """
-# Base class for all Self-Supervised Learning (SSL) models.
-# """
-
-# from __future__ import annotations
-
-# from abc import ABC, abstractmethod
-
-# import torch
-# import torch.nn as nn
-
-# from models.backbone import ResNet18Backbone
-
-
-# class BaseSSLModel(nn.Module, ABC):
-#     """
-#     Base class for all SSL methods.
-
-#     Every SSL algorithm shares:
-
-#     - ResNet-18 backbone
-#     - Feature extraction
-#     - Freeze / unfreeze utilities
-#     """
-
-#     def __init__(
-#         self,
-#         pretrained_backbone: bool = False,
-#     ):
-#         super().__init__()
-
-#         self.backbone = ResNet18Backbone(
-#             pretrained=pretrained_backbone
-#         )
-
-#         self.feature_dim = self.backbone.feature_dim
-
-#     # ---------------------------------------------------------
-#     # Feature Extraction
-#     # ---------------------------------------------------------
-
-#     def encode(self, x: torch.Tensor) -> torch.Tensor:
-#         """
-#         Extract backbone features.
-#         """
-#         return self.backbone(x)
-
-#     @torch.no_grad()
-#     def extract_features(
-#         self,
-#         x: torch.Tensor,
-#     ) -> torch.Tensor:
-#         """
-#         Used during linear probing.
-#         """
-#         return self.encode(x)
-
-#     # ---------------------------------------------------------
-#     # Backbone Utilities
-#     # ---------------------------------------------------------
-
-#     def freeze_backbone(self):
-
-#         for param in self.backbone.parameters():
-#             param.requires_grad = False
-
-#     def unfreeze_backbone(self):
-
-#         for param in self.backbone.parameters():
-#             param.requires_grad = True
-
-#     # ---------------------------------------------------------
-#     # Optional Hooks
-#     # ---------------------------------------------------------
-
-#     def update_target_network(self):
-#         """
-#         Only required for teacher/student methods
-#         such as BYOL and LeJEPA.
-#         """
-#         pass
-
-#     # ---------------------------------------------------------
-#     # Abstract Methods
-#     # ---------------------------------------------------------
-
-#     @abstractmethod
-#     def compute_loss(
-#         self,
-#         *args,
-#         **kwargs,
-#     ):
-#         """
-#         Compute SSL loss.
-#         """
-#         pass
-
 """
 Base class for all Self-Supervised Learning (SSL) models.
 """
@@ -111,7 +14,7 @@ from models.backbone import ResNet18Backbone
 
 class BaseSSLModel(nn.Module, ABC):
     """
-    Base class for all SSL methods.
+    Abstract base class for all Self-Supervised Learning methods.
     """
 
     def __init__(
@@ -121,31 +24,38 @@ class BaseSSLModel(nn.Module, ABC):
         super().__init__()
 
         self.backbone = ResNet18Backbone(
-            pretrained=pretrained_backbone
+            pretrained_backbone=pretrained_backbone,
         )
 
         self.feature_dim = self.backbone.feature_dim
 
     # ==========================================================
-    # Backbone Interface
+    # Encoder Interface
     # ==========================================================
+
+    def get_encoder(self) -> nn.Module:
+        """
+        Return the feature extraction encoder.
+
+        This method is used by downstream tasks such as
+        linear probing and feature extraction.
+        """
+        return self.backbone
 
     def get_backbone(self) -> nn.Module:
         """
-        Return the backbone used for feature extraction.
-
-        Child classes may override this method.
+        Backward-compatible alias for get_encoder().
         """
-        return self.backbone
+        return self.get_encoder()
 
     def encode(
         self,
         x: torch.Tensor,
     ) -> torch.Tensor:
         """
-        Encode an image into a feature vector.
+        Extract encoder features.
         """
-        return self.get_backbone()(x)
+        return self.get_encoder()(x)
 
     @torch.no_grad()
     def extract_features(
@@ -153,8 +63,9 @@ class BaseSSLModel(nn.Module, ABC):
         x: torch.Tensor,
     ) -> torch.Tensor:
         """
-        Extract backbone features for downstream evaluation.
+        Extract frozen encoder features for downstream evaluation.
         """
+        self.get_encoder().eval()
         return self.encode(x)
 
     # ==========================================================
@@ -162,13 +73,17 @@ class BaseSSLModel(nn.Module, ABC):
     # ==========================================================
 
     def freeze_backbone(self) -> None:
-
-        for parameter in self.get_backbone().parameters():
+        """
+        Freeze encoder parameters.
+        """
+        for parameter in self.get_encoder().parameters():
             parameter.requires_grad = False
 
     def unfreeze_backbone(self) -> None:
-
-        for parameter in self.get_backbone().parameters():
+        """
+        Unfreeze encoder parameters.
+        """
+        for parameter in self.get_encoder().parameters():
             parameter.requires_grad = True
 
     # ==========================================================
@@ -177,13 +92,26 @@ class BaseSSLModel(nn.Module, ABC):
 
     def update_target_network(self) -> None:
         """
-        Override for EMA-based methods.
+        Hook for EMA-based methods (e.g. BYOL).
+
+        Models that do not require a target network
+        can safely ignore this.
         """
         pass
 
     # ==========================================================
-    # Abstract Methods
+    # Abstract Interface
     # ==========================================================
+
+    @abstractmethod
+    def forward(
+        self,
+        x: torch.Tensor,
+    ) -> torch.Tensor:
+        """
+        Forward pass.
+        """
+        raise NotImplementedError
 
     @abstractmethod
     def compute_loss(
@@ -192,6 +120,6 @@ class BaseSSLModel(nn.Module, ABC):
         **kwargs,
     ) -> torch.Tensor:
         """
-        Compute the SSL loss.
+        Compute the self-supervised learning loss.
         """
         raise NotImplementedError

@@ -3,6 +3,7 @@ from .simclr import SimCLR
 from .byol import BYOL
 from .vicreg import VICReg
 from .barlow_twins import BarlowTwins
+from .lejepa import LeJEPA
 
 __all__ = [
     "BaseSSLModel",
@@ -10,4 +11,5 @@ __all__ = [
     "BYOL",
     "VICReg",
     "BarlowTwins",
+    "LeJEPA",
 ]

@@ -18,6 +18,8 @@ from torchvision.datasets import CIFAR10, STL10
 
 from data.splits import train_val_split
 
+from data.ssl_dataset import SSLDataset
+
 
 SUPPORTED_DATASETS = {
     "cifar10",
@@ -133,6 +135,11 @@ def get_dataloaders(
         dataset=train_dataset,
         val_split=val_split,
         seed=seed,
+    )
+    train_dataset = SSLDataset(
+        dataset=train_dataset,
+        transform=train_transform,
+        num_views=2
     )
 
     # ==========================================================

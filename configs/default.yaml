@@ -1,0 +1,206 @@
+# ==========================================================
+# General
+# ==========================================================
+
+experiment_name: "ssl_comparison"
+
+seed: 42
+
+device: "auto"
+
+output_dir: "results"
+
+checkpoint_dir: "checkpoints"
+
+log_dir: "logs"
+
+num_workers: 4
+
+pin_memory: true
+
+save_every: 10
+
+resume: false
+
+# ==========================================================
+# Dataset
+# ==========================================================
+
+dataset:
+
+  name: "CIFAR10"
+
+  root: "./datasets"
+
+  image_size: 32
+
+  num_classes: 10
+
+  train_split: 0.9
+
+  val_split: 0.1
+
+# ==========================================================
+# Training
+# ==========================================================
+
+training:
+
+  epochs: 200
+
+  batch_size: 256
+
+  gradient_clip: null
+
+  mixed_precision: true
+
+# ==========================================================
+# Optimizer
+# ==========================================================
+
+optimizer:
+
+  name: "AdamW"
+
+  learning_rate: 0.001
+
+  weight_decay: 0.0001
+
+# ==========================================================
+# Scheduler
+# ==========================================================
+
+scheduler:
+
+  name: CosineAnnealingLR
+
+  T_max: 200
+
+  eta_min: 0.000001
+
+  # StepLR
+  step_size: 30
+  gamma: 0.1
+
+  # MultiStepLR
+  milestones: [100, 150]
+
+  # ReduceLROnPlateau
+  mode: min
+  factor: 0.5
+  patience: 10
+  min_lr: 0.000001
+
+  # CosineAnnealingWarmRestarts
+  T_0: 20
+  T_mult: 2
+
+# ==========================================================
+# SSL Model
+# ==========================================================
+
+model:
+
+  name: "simclr"
+
+  backbone: "resnet18"
+
+  projection_dim: 2048
+
+  hidden_dim: 2048
+
+  pretrained_backbone: false
+
+# ==========================================================
+# SimCLR
+# ==========================================================
+
+simclr:
+
+  temperature: 0.5
+
+# ==========================================================
+# BYOL
+# ==========================================================
+
+byol:
+
+  projection_dim: 2048
+
+  predictor_hidden_dim: 512
+
+  momentum: 0.996
+
+# ==========================================================
+# VICReg
+# ==========================================================
+
+vicreg:
+
+  sim_coeff: 25.0
+
+  std_coeff: 25.0
+
+  cov_coeff: 1.0
+
+# ==========================================================
+# Barlow Twins
+# ==========================================================
+
+barlow_twins:
+
+  lambda_coeff: 0.005
+
+# ==========================================================
+# LeJEPA
+# ==========================================================
+
+lejepa:
+
+  lambda_sigreg: 0.02
+
+  num_slices: 256
+
+  epps_points: 17
+
+  epps_tmax: 3.0
+
+# ==========================================================
+# Linear Probe
+# ==========================================================
+
+linear_probe:
+
+  epochs: 100
+
+  batch_size: 256
+
+  learning_rate: 0.01
+
+# ==========================================================
+# Evaluation
+# ==========================================================
+
+evaluation:
+
+  save_embeddings: true
+
+  save_confusion_matrix: true
+
+  save_tsne: true
+
+  save_umap: true
+
+# ==========================================================
+# Logging
+# ==========================================================
+
+logging:
+
+  tensorboard: true
+
+  csv: true
+
+  console: true
+
+  log_every: 10

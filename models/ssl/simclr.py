@@ -39,7 +39,7 @@ class SimCLR(BaseSSLModel):
         pretrained_backbone: bool = False,
     ):
         super().__init__(
-            pretrained=pretrained_backbone,
+            pretrained_backbone=pretrained_backbone,
         )
 
         self.projection_head = ProjectionHead(
