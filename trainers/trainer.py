@@ -233,7 +233,7 @@ class Trainer:
                 "dataset": self.config.dataset.name,
                 "model": self.config.model.name,
                 "epochs": self.epochs,
-                "best_validation_loss": self.best_loss,
+                "best_training_loss": self.best_loss,
                 "final_train_loss": train_loss,
                 "final_validation_loss": val_loss,
                 "optimizer": self.config.optimizer.name,
@@ -275,11 +275,11 @@ class Trainer:
             non_blocking=True,
         )
 
-        before = (
-            self.model.projection_head.network[0]
-            .weight.detach()
-            .clone()
-        )
+        # before = (
+        #     self.model.projection_head.network[0]
+        #     .weight.detach()
+        #     .clone()
+        # )
 
         self.optimizer.zero_grad(
             set_to_none=True,
@@ -297,10 +297,10 @@ class Trainer:
 
         self.scaler.scale(loss).backward()
 
-        grad = (
-            self.model.projection_head.network[0]
-            .weight.grad
-        )
+        # grad = (
+        #     self.model.projection_head.network[0]
+        #     .weight.grad
+        # )
 
         # print(
         #     "Gradient mean:",
@@ -318,7 +318,7 @@ class Trainer:
 
         self.scaler.step(self.optimizer)
 
-        after = self.model.projection_head.network[0].weight.detach()
+        # after = self.model.projection_head.network[0].weight.detach()
 
         # print(
         #     "Weight update:",

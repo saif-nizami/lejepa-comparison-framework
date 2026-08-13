@@ -20,6 +20,7 @@ def build_scheduler(
     optimizer: Optimizer,
     config,
     steps_per_epoch: int | None = None,
+    epochs: int | None = None,
 ):
     """
     Build a learning rate scheduler from the configuration.
@@ -49,7 +50,7 @@ def build_scheduler(
 
         return CosineAnnealingLR(
             optimizer,
-            T_max=config.scheduler.T_max,
+            T_max=epochs if epochs is not None else config.scheduler.T_max,
             eta_min=config.scheduler.eta_min,
         )
 
@@ -98,7 +99,7 @@ def build_scheduler(
         return OneCycleLR(
             optimizer,
             max_lr=config.optimizer.learning_rate,
-            epochs=config.training.epochs,
+            epochs=epochs if epochs is not None else config.training.epochs,
             steps_per_epoch=steps_per_epoch,
         )
 

@@ -147,7 +147,6 @@ def main():
     optimizer = build_optimizer(
         model,
         cfg,
-        learning_rate=cfg.linear_probe.learning_rate,
     )
 
     num = sum(

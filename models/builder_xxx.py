@@ -19,7 +19,7 @@ def build_model(config):
 
     if name == "simclr":
 
-        return SimCLR(
+        model = SimCLR(
             projection_dim=config.model.projection_dim,
             hidden_dim=config.model.hidden_dim,
             temperature=config.simclr.temperature,
@@ -28,7 +28,7 @@ def build_model(config):
 
     elif name == "byol":
 
-        return BYOL(
+        model = BYOL(
             projection_dim=config.byol.projection_dim,
             hidden_dim=config.model.hidden_dim,
             predictor_hidden_dim=config.byol.predictor_hidden_dim,
@@ -38,7 +38,7 @@ def build_model(config):
 
     elif name == "vicreg":
 
-        return VICReg(
+        model = VICReg(
             projection_dim=config.model.projection_dim,
             hidden_dim=config.model.hidden_dim,
             sim_coeff=config.vicreg.sim_coeff,
@@ -49,7 +49,7 @@ def build_model(config):
 
     elif name == "barlow_twins":
 
-        return BarlowTwins(
+        model = BarlowTwins(
             projection_dim=config.model.projection_dim,
             hidden_dim=config.model.hidden_dim,
             lambd=config.barlow_twins.lambda_coeff,
@@ -58,7 +58,7 @@ def build_model(config):
 
     elif name == "lejepa":
 
-        return LeJEPA(
+        model = LeJEPA(
             projection_dim=config.model.projection_dim,
             hidden_dim=config.model.hidden_dim,
             lambda_sigreg=config.lejepa.lambda_sigreg,
@@ -68,6 +68,9 @@ def build_model(config):
             pretrained_backbone=config.model.pretrained_backbone,
         )
 
-    raise ValueError(
-        f"Unknown SSL model '{config.model.name}'."
-    )
+    else:
+        raise ValueError(
+            f"Unknown SSL model '{config.model.name}'."
+        )
+
+    return model

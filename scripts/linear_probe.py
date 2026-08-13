@@ -142,6 +142,7 @@ def main():
     scheduler = build_scheduler(
         optimizer,
         cfg,
+        epochs=cfg.linear_probe.epochs,
     )
 
     trainer = LinearProbeTrainer(
