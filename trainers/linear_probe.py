@@ -107,6 +107,9 @@ class LinearProbeTrainer:
 
         images, labels = batch
 
+        # print(images.shape)
+        # print(labels.min(), labels.max())
+
         images = images.to(
             self.device,
             non_blocking=True,
@@ -126,6 +129,9 @@ class LinearProbeTrainer:
         with torch.no_grad():
             features = self.backbone(images)
 
+        # print("Feature mean:", features.mean().item())
+        # print("Feature std :", features.std().item())
+
         with autocast(
             device_type="cuda",
             enabled=self.use_amp,
@@ -137,6 +143,9 @@ class LinearProbeTrainer:
                 logits,
                 labels,
             )
+
+            # print("Raw CE Loss:", loss.item())
+            # raise SystemExit
 
         self.scaler.scale(loss).backward()
 
@@ -308,8 +317,8 @@ class LinearProbeTrainer:
 
         best_acc = 0.0
 
-        print(sum(p.requires_grad for p in self.backbone.parameters())) 
-        print(sum(p.requires_grad for p in self.classifier.parameters()))
+        # print(sum(p.requires_grad for p in self.backbone.parameters())) 
+        # print(sum(p.requires_grad for p in self.classifier.parameters()))
 
         # checkpoint_dir = (
         #     Path(self.config.checkpoint_dir)

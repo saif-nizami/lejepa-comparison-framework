@@ -63,6 +63,17 @@ class SSLDataset(Dataset):
         index: int,
     ) -> tuple[tuple[Any, ...], int]:
 
+        # import torch
+
+        # image, label = self.dataset[index]
+
+        # view1 = self.transform(image)
+        # view2 = self.transform(image)
+
+        # print("Equal:", torch.equal(view1, view2))
+
+        # return (view1, view2), label
+
         image, label = self.dataset[index]
 
         views = tuple(

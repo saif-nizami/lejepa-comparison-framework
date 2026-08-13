@@ -20,6 +20,8 @@ from trainers.checkpoint import (
 from trainers.logger import TrainingLogger
 from trainers.metrics import MetricTracker
 
+from utils.results_logger import ResultsLogger
+
 
 class Trainer:
     """
@@ -89,6 +91,12 @@ class Trainer:
         # Metrics
         self.train_metrics = MetricTracker("loss")
         self.val_metrics = MetricTracker("loss")
+
+        self.results_logger = ResultsLogger(
+            output_dir=config.output_dir,
+            dataset=config.dataset.name,
+            model=config.model.name,
+        )
 
     def train_one_epoch(self) -> float:
         """
@@ -170,6 +178,13 @@ class Trainer:
 
             current_lr = self.optimizer.param_groups[0]["lr"]
 
+            self.results_logger.log_epoch(
+                epoch=epoch + 1,
+                train_loss=train_loss,
+                val_loss=val_loss,
+                learning_rate=current_lr,
+            )
+
             self.logger.log(
                 epoch=epoch + 1,
                 train_loss=train_loss,
@@ -186,9 +201,21 @@ class Trainer:
                 train_loss,
             )
 
-            if val_loss < self.best_loss:
+            # if val_loss < self.best_loss:
 
-                self.best_loss = val_loss
+            #     self.best_loss = val_loss
+
+            #     save_best_checkpoint(
+            #         self.checkpoint_dir,
+            #         self.model,
+            #         self.optimizer,
+            #         self.scheduler,
+            #         epoch + 1,
+            #         val_loss,
+            #     )
+
+            if train_loss < self.best_loss:
+                self.best_loss = train_loss
 
                 save_best_checkpoint(
                     self.checkpoint_dir,
@@ -196,8 +223,25 @@ class Trainer:
                     self.optimizer,
                     self.scheduler,
                     epoch + 1,
-                    val_loss,
+                    train_loss,
                 )
+
+        self.results_logger.save_history()
+
+        self.results_logger.save_metrics(
+            {
+                "dataset": self.config.dataset.name,
+                "model": self.config.model.name,
+                "epochs": self.epochs,
+                "best_validation_loss": self.best_loss,
+                "final_train_loss": train_loss,
+                "final_validation_loss": val_loss,
+                "optimizer": self.config.optimizer.name,
+                "scheduler": self.config.scheduler.name,
+                "learning_rate": self.config.optimizer.learning_rate,
+                "batch_size": self.config.training.batch_size,
+            }
+        )
 
         self.logger.close()
 
@@ -231,6 +275,12 @@ class Trainer:
             non_blocking=True,
         )
 
+        before = (
+            self.model.projection_head.network[0]
+            .weight.detach()
+            .clone()
+        )
+
         self.optimizer.zero_grad(
             set_to_none=True,
         )
@@ -247,6 +297,16 @@ class Trainer:
 
         self.scaler.scale(loss).backward()
 
+        grad = (
+            self.model.projection_head.network[0]
+            .weight.grad
+        )
+
+        # print(
+        #     "Gradient mean:",
+        #     grad.abs().mean().item(),
+        # )
+
         if self.config.training.gradient_clip is not None:
 
             self.scaler.unscale_(self.optimizer)
@@ -257,6 +317,13 @@ class Trainer:
             )
 
         self.scaler.step(self.optimizer)
+
+        after = self.model.projection_head.network[0].weight.detach()
+
+        # print(
+        #     "Weight update:",
+        #     (after - before).abs().mean().item(),
+        # )
 
         self.scaler.update()
 

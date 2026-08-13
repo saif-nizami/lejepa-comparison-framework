@@ -105,11 +105,24 @@ def main():
 
     print(f"Loading {checkpoint}")
 
-    load_checkpoint(
+    # load_checkpoint(
+    #     checkpoint,
+    #     ssl_model,
+    #     map_location=device,
+    # )
+
+    ckpt = load_checkpoint(
         checkpoint,
         ssl_model,
         map_location=device,
     )
+
+    # print("Checkpoint epoch:", ckpt["epoch"])
+    # print("Checkpoint loss:", ckpt["loss"])
+
+    # print(
+    #     ssl_model.get_backbone().encoder[0].weight.norm().item()
+    # )
 
     for name, param in ssl_model.named_parameters():
         print(name, param.abs().mean().item())

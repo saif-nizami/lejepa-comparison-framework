@@ -133,6 +133,13 @@ def main():
         f"Model: {cfg.model.name}"
     )
 
+    total = sum(
+        p.numel()
+        for p in model.parameters()
+    )
+
+    print("Model parameters:", total)
+
     # ======================================================
     # Optimizer
     # ======================================================
@@ -142,6 +149,14 @@ def main():
         cfg,
         learning_rate=cfg.linear_probe.learning_rate,
     )
+
+    num = sum(
+        p.numel()
+        for group in optimizer.param_groups
+        for p in group["params"]
+    )
+
+    print("Optimizer parameters:", num)
 
     # ======================================================
     # Scheduler

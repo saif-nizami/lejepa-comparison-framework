@@ -197,7 +197,7 @@ def get_dataloaders(
     )
 
     test_loader = DataLoader(
-        test_dataset,
+        dataset=test_dataset,
         shuffle=False,
         **common_args,
     )
