@@ -58,11 +58,21 @@ training:
 # Optimizer
 # ==========================================================
 
+# optimizer:
+
+#   name: "AdamW"
+
+#   learning_rate: 0.001
+
+#   weight_decay: 0.0001
+
 optimizer:
 
-  name: "AdamW"
+  name: SGD
 
-  learning_rate: 0.001
+  learning_rate: 0.5
+
+  momentum: 0.9
 
   weight_decay: 0.0001
 
@@ -105,9 +115,9 @@ model:
 
   backbone: "resnet18"
 
-  projection_dim: 2048
+  projection_dim: 128
 
-  hidden_dim: 2048
+  hidden_dim: 512
 
   pretrained_backbone: false
 
@@ -175,7 +185,9 @@ linear_probe:
 
   batch_size: 256
 
-  learning_rate: 0.01
+  learning_rate: 0.1
+
+  weight_decay: 0
 
 # ==========================================================
 # Evaluation

@@ -20,6 +20,8 @@ from data.splits import train_val_split
 
 from data.ssl_dataset import SSLDataset
 
+from data.transform_dataset import TransformDataset
+
 
 SUPPORTED_DATASETS = {
     "cifar10",
@@ -36,6 +38,7 @@ def get_dataloaders(
     val_split: float = 0.1,
     num_workers: int = 4,
     seed: int = 42,
+    ssl: bool = True,
 ):
     """
     Create train, validation and test dataloaders.
@@ -96,15 +99,17 @@ def get_dataloaders(
         train_dataset = CIFAR10(
             root=dataset_root,
             train=True,
-            transform=train_transform,
-            download=False,
+            # transform=train_transform,
+            transform=None,
+            download=True,
         )
 
         test_dataset = CIFAR10(
             root=dataset_root,
             train=False,
-            transform=test_transform,
-            download=False,
+            # transform=test_transform,
+            transform=None,
+            download=True,
         )
 
     # ==========================================================
@@ -116,15 +121,17 @@ def get_dataloaders(
         train_dataset = STL10(
             root=dataset_root,
             split="train",
-            transform=train_transform,
-            download=False,
+            # transform=train_transform,
+            transform=None,
+            download=True,
         )
 
         test_dataset = STL10(
             root=dataset_root,
             split="test",
-            transform=test_transform,
-            download=False,
+            # transform=test_transform,
+            transform=None,
+            download=True,
         )
 
     # ==========================================================
@@ -136,10 +143,34 @@ def get_dataloaders(
         val_split=val_split,
         seed=seed,
     )
-    train_dataset = SSLDataset(
-        dataset=train_dataset,
-        transform=train_transform,
-        num_views=2
+    # train_dataset = SSLDataset(
+    #     dataset=train_dataset,
+    #     transform=train_transform,
+    #     num_views=2
+    # )
+    # train_dataset = SSLDataset(
+    #     dataset=train_dataset,
+    #     transform=train_transform,
+    #     num_views=2,
+    # )
+    if ssl:
+
+        train_dataset = SSLDataset(
+            dataset=train_dataset,
+            transform=train_transform,
+            num_views=2,
+        )
+
+    else:
+
+        train_dataset = TransformDataset(
+            dataset=train_dataset,
+            transform=train_transform,
+        )
+
+    val_dataset = TransformDataset(
+        dataset=val_dataset,
+        transform=test_transform,
     )
 
     # ==========================================================

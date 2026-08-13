@@ -39,6 +39,16 @@ class LinearProbeTrainer:
         self.device = device
         self.config = config
 
+        self.checkpoint_dir = (
+            Path(config.checkpoint_dir)
+            / "linear_probe"
+            / config.model.name.lower()
+        )
+        self.checkpoint_dir.mkdir(
+            parents=True,
+            exist_ok=True,
+        )
+
         # --------------------------------------------------
         # Frozen backbone
         # --------------------------------------------------
@@ -298,10 +308,13 @@ class LinearProbeTrainer:
 
         best_acc = 0.0
 
-        checkpoint_dir = (
-            Path(self.config.checkpoint_dir)
-            / "linear_probe"
-        )
+        print(sum(p.requires_grad for p in self.backbone.parameters())) 
+        print(sum(p.requires_grad for p in self.classifier.parameters()))
+
+        # checkpoint_dir = (
+        #     Path(self.config.checkpoint_dir)
+        #     / "linear_probe"
+        # )
 
         for epoch in range(self.epochs):
 
@@ -324,7 +337,7 @@ class LinearProbeTrainer:
                 best_acc = val["accuracy"]
 
                 save_best_checkpoint(
-                    checkpoint_dir,
+                    self.checkpoint_dir,
                     self.classifier,
                     self.optimizer,
                     self.scheduler,

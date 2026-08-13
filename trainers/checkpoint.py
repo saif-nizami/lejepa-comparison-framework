@@ -117,13 +117,15 @@ def save_best_checkpoint(
     scheduler: LRScheduler | None,
     epoch: int,
     loss: float,
+    filename="best_model.pth",
 ) -> None:
     """
     Save the best-performing checkpoint.
     """
 
     save_checkpoint(
-        Path(checkpoint_dir) / "best_model.pth",
+        # Path(checkpoint_dir) / "best_model.pth",
+        Path(checkpoint_dir) / filename,
         model,
         optimizer,
         scheduler,
@@ -139,13 +141,15 @@ def save_last_checkpoint(
     scheduler: LRScheduler | None,
     epoch: int,
     loss: float,
+    filename="last_model.pth",
 ) -> None:
     """
     Save the latest checkpoint.
     """
 
     save_checkpoint(
-        Path(checkpoint_dir) / "last_model.pth",
+        # Path(checkpoint_dir) / "last_model.pth",
+        Path(checkpoint_dir) / filename,
         model,
         optimizer,
         scheduler,

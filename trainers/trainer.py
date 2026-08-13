@@ -7,7 +7,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import torch
-from torch.amp import GradScaler
+from torch.amp import GradScaler, autocast
 from tqdm import tqdm
 
 from models.ssl import BaseSSLModel
@@ -72,7 +72,7 @@ class Trainer:
         )
 
         # Checkpoint directory
-        self.checkpoint_dir = Path(config.checkpoint_dir)
+        self.checkpoint_dir = Path(config.checkpoint_dir)/config.dataset.name.lower()/config.model.name.lower()
         self.checkpoint_dir.mkdir(
             parents=True,
             exist_ok=True,

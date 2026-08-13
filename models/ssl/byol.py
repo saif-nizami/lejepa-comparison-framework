@@ -13,7 +13,7 @@ import copy
 import torch
 import torch.nn as nn
 
-from losses import NegativeCosineSimilarity
+from models.losses import NegativeCosineSimilarity
 from models.heads import PredictorHead, ProjectionHead
 from models.ssl.base_ssl import BaseSSLModel
 from utils.ema import update_moving_average

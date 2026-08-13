@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import torch
 
-from losses import BarlowTwinsLoss
+from models.losses import BarlowTwinsLoss
 from models.heads import ProjectionHead
 from models.ssl.base_ssl import BaseSSLModel
 from utils.registry import register_ssl_model

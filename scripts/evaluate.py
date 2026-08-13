@@ -5,7 +5,13 @@ Evaluate a pretrained SSL model using a trained linear probe.
 from __future__ import annotations
 
 import argparse
+import sys
 from pathlib import Path
+
+# Make direct execution (`python scripts/evaluate.py`) work as well as module
+# execution (`python -m scripts.evaluate`).
+if __package__ in (None, ""):
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from data.dataset_loader import get_dataloaders
 from data.transforms import get_transforms

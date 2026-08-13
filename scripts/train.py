@@ -5,6 +5,13 @@ Main training script for Self-Supervised Learning.
 from __future__ import annotations
 
 import argparse
+import sys
+from pathlib import Path
+
+# Make direct execution (`python scripts/train.py`) work as well as module
+# execution (`python -m scripts.train`).
+if __package__ in (None, ""):
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from data.dataset_loader import get_dataloaders
 from data.transforms import get_transforms
@@ -47,6 +54,17 @@ def parse_args():
         help="Override model specified in the configuration file.",
     )
 
+    parser.add_argument(
+        "--dataset",
+        type=str,
+        default=None,
+        choices=[
+            "cifar10",
+            "stl10",
+        ],
+        help="Override dataset specified in the configuration.",
+    )
+
     return parser.parse_args()
 
 
@@ -62,6 +80,9 @@ def main():
     
     if args.model is not None:
         cfg.model.name = args.model
+
+    if args.dataset is not None:
+        cfg.dataset.name = args.dataset
 
     # ======================================================
     # Reproducibility
@@ -99,6 +120,7 @@ def main():
         val_split=cfg.dataset.val_split,
         num_workers=cfg.num_workers,
         seed=cfg.seed,
+        ssl=True
     )
 
     # ======================================================
@@ -118,6 +140,7 @@ def main():
     optimizer = build_optimizer(
         model,
         cfg,
+        learning_rate=cfg.linear_probe.learning_rate,
     )
 
     # ======================================================
@@ -136,7 +159,8 @@ def main():
     trainer = Trainer(
         model=model,
         train_loader=dataloaders["train"],
-        val_loader=dataloaders["val"],
+        # val_loader=dataloaders["val"],
+        val_loader=None,
         optimizer=optimizer,
         scheduler=scheduler,
         device=device,

@@ -2,8 +2,8 @@
 LeJEPA: Provable and Scalable Self-Supervised Learning
 Without the Heuristics.
 
-This implementation integrates the official LeJEPA package
-with the common SSL framework used in this project.
+This implementation uses the project's SIGReg loss with the common SSL
+framework used in this project.
 
 Paper:
 LeJEPA: Provable and Scalable Self-Supervised Learning
@@ -15,10 +15,8 @@ from __future__ import annotations
 
 import torch
 
-from lejepa.multivariate import SlicingUnivariateTest
-from lejepa.univariate import EppsPulley
-
 from models.heads import ProjectionHead
+from models.losses import SIGRegLoss
 from models.ssl.base_ssl import BaseSSLModel
 from utils.registry import register_ssl_model
 
@@ -73,16 +71,13 @@ class LeJEPA(BaseSSLModel):
         )
 
         # -----------------------------------------------------
-        # Official SIGReg
+        # SIGReg
         # -----------------------------------------------------
 
-        self.sigreg = SlicingUnivariateTest(
-            univariate_test=EppsPulley(
-                t_max=epps_tmax,
-                n_points=epps_points,
-            ),
-            num_slices=num_slices,
-            reduction="mean",
+        self.sigreg = SIGRegLoss(
+            knots=epps_points,
+            t_max=epps_tmax,
+            num_projections=num_slices,
         )
 
     # =========================================================

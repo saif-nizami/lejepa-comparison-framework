@@ -24,7 +24,7 @@ class BaseSSLModel(nn.Module, ABC):
         super().__init__()
 
         self.backbone = ResNet18Backbone(
-            pretrained_backbone=pretrained_backbone,
+            pretrained=pretrained_backbone,
         )
 
         self.feature_dim = self.backbone.feature_dim

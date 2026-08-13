@@ -47,39 +47,77 @@ SUPPORTED_METHODS = {
 # SSL Training Transform
 # ============================================================
 
-def build_ssl_transform(image_size: int, mean, std):
-    """
-    Augmentation pipeline used during SSL pretraining.
-    """
+# def build_ssl_transform(image_size: int, mean, std):
+#     """
+#     Augmentation pipeline used during SSL pretraining.
+#     """
 
-    return transforms.Compose(
-        [
-            transforms.RandomResizedCrop(
-                image_size,
-                scale=(0.2, 1.0),
-                interpolation=transforms.InterpolationMode.BICUBIC,
-            ),
-            transforms.RandomHorizontalFlip(p=0.5),
-            transforms.RandomApply(
-                [
-                    transforms.ColorJitter(
-                        brightness=0.4,
-                        contrast=0.4,
-                        saturation=0.4,
-                        hue=0.1,
-                    )
-                ],
-                p=0.8,
-            ),
-            transforms.RandomGrayscale(p=0.2),
+#     return transforms.Compose(
+#         [
+#             transforms.RandomResizedCrop(
+#                 image_size,
+#                 scale=(0.6, 1.0),
+#                 interpolation=transforms.InterpolationMode.BICUBIC,
+#             ),
+#             transforms.RandomHorizontalFlip(p=0.5),
+#             transforms.RandomApply(
+#                 [
+#                     transforms.ColorJitter(
+#                         brightness=0.4,
+#                         contrast=0.4,
+#                         saturation=0.4,
+#                         hue=0.1,
+#                     )
+#                 ],
+#                 p=0.8,
+#             ),
+#             transforms.RandomGrayscale(p=0.2),
+#             # transforms.GaussianBlur(
+#             #     kernel_size=3,
+#             #     sigma=(0.1, 2.0),
+#             # ),
+#             transforms.ToTensor(),
+#             transforms.Normalize(mean, std),
+#         ]
+#     )
+
+def build_ssl_transform(dataset: str, image_size: int, mean, std):
+
+    transforms_list = [
+        transforms.RandomResizedCrop(
+            image_size,
+            scale=(0.6, 1.0),
+            interpolation=transforms.InterpolationMode.BICUBIC,
+        ),
+        transforms.RandomHorizontalFlip(),
+        transforms.RandomApply(
+            [
+                transforms.ColorJitter(
+                    brightness=0.4,
+                    contrast=0.4,
+                    saturation=0.4,
+                    hue=0.1,
+                )
+            ],
+            p=0.8,
+        ),
+        transforms.RandomGrayscale(p=0.2),
+    ]
+
+    if dataset.lower() != "cifar10":
+        transforms_list.append(
             transforms.GaussianBlur(
                 kernel_size=3,
                 sigma=(0.1, 2.0),
-            ),
-            transforms.ToTensor(),
-            transforms.Normalize(mean, std),
-        ]
-    )
+            )
+        )
+
+    transforms_list.extend([
+        transforms.ToTensor(),
+        transforms.Normalize(mean, std),
+    ])
+
+    return transforms.Compose(transforms_list)
 
 
 # ============================================================
@@ -141,7 +179,13 @@ def get_transforms(
 
     stats = DATASET_STATS[dataset]
 
+    # train_transform = build_ssl_transform(
+    #     image_size=stats["image_size"],
+    #     mean=stats["mean"],
+    #     std=stats["std"],
+    # )
     train_transform = build_ssl_transform(
+        dataset=dataset,
         image_size=stats["image_size"],
         mean=stats["mean"],
         std=stats["std"],

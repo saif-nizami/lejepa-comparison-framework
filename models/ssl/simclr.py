@@ -13,7 +13,7 @@ import torch
 
 from models.heads import ProjectionHead
 from models.ssl.base_ssl import BaseSSLModel
-from losses import NTXentLoss
+from models.losses import NTXentLoss
 
 @register_ssl_model("simclr")
 class SimCLR(BaseSSLModel):

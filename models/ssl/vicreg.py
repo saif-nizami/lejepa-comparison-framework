@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import torch
 
-from losses import VICRegLoss
+from models.losses import VICRegLoss
 from models.heads import ProjectionHead
 from models.ssl.base_ssl import BaseSSLModel
 from utils.registry import register_ssl_model
