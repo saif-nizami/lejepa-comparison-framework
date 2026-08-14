@@ -156,9 +156,21 @@ class Trainer:
         Complete training loop.
         """
 
+        # for epoch in range(self.epochs):
+
+        #     self.current_epoch = epoch
+
+        #     train_loss = self.train_one_epoch()
+
         for epoch in range(self.epochs):
 
             self.current_epoch = epoch
+
+            # ----------------------------------------
+            # Pass epoch information to model
+            # ----------------------------------------
+            self.model.current_epoch = epoch
+            self.model.debug_printed = False
 
             train_loss = self.train_one_epoch()
 
@@ -306,6 +318,13 @@ class Trainer:
         #     "Gradient mean:",
         #     grad.abs().mean().item(),
         # )
+
+        # total_norm = torch.nn.utils.clip_grad_norm_(
+        #     self.model.parameters(),
+        #     1.0,
+        # )
+
+        # print("Gradient norm:", total_norm.item())
 
         if self.config.training.gradient_clip is not None:
 

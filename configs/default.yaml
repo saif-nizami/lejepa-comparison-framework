@@ -50,9 +50,9 @@ training:
 
   batch_size: 256
 
-  gradient_clip: null
+  gradient_clip: 1.0
 
-  mixed_precision: true
+  mixed_precision: false
 
 # ==========================================================
 # Optimizer
@@ -60,21 +60,21 @@ training:
 
 optimizer:
 
-  # name: "AdamW"
+  name: "AdamW"
 
-  # learning_rate: 0.001
+  learning_rate: 0.0003
 
-  # weight_decay: 0.0001
+  weight_decay: 0.000001
 
 # optimizer:
 
-  name: SGD
+  # name: SGD
 
-  learning_rate: 0.5
+  # learning_rate: 0.5
 
-  momentum: 0.9
+  # momentum: 0.9
 
-  weight_decay: 0.0001
+  # weight_decay: 0.0001
 
 # ==========================================================
 # Scheduler
@@ -151,7 +151,7 @@ vicreg:
 
   std_coeff: 25.0
 
-  cov_coeff: 1.0
+  cov_coeff: 0.1
 
 # ==========================================================
 # Barlow Twins

@@ -142,113 +142,6 @@ class LeJEPA(BaseSSLModel):
     # Loss
     # =========================================================
 
-    # def compute_loss(
-    #     self,
-    #     view1: torch.Tensor,
-    #     view2: torch.Tensor,
-    # ) -> torch.Tensor:
-    #     """
-    #     Compute the LeJEPA objective.
-
-    #     Parameters
-    #     ----------
-    #     view1 : torch.Tensor
-    #         First augmented view.
-
-    #     view2 : torch.Tensor
-    #         Second augmented view.
-    #     """
-
-    #     z1 = self.forward(view1)
-
-    #     z2 = self.forward(view2)
-
-    #     print("Raw cosine:",
-    #         torch.nn.functional.cosine_similarity(
-    #             z1,
-    #             z2,
-    #             dim=1
-    #         ).mean().item())
-
-    #     print("Mean |z1-z2|:",
-    #         (z1 - z2).abs().mean().item())
-
-    #     breakpoint = False
-
-    #     print(
-    #         "z1 mean:",
-    #         z1.mean().item(),
-    #         "std:",
-    #         z1.std().item(),
-    #     )
-
-    #     print(
-    #         "z2 mean:",
-    #         z2.mean().item(),
-    #         "std:",
-    #         z2.std().item(),
-    #     )
-
-    #     # projections = torch.stack(
-    #     #     [z1, z2],
-    #     #     dim=0,
-    #     # )
-
-    #     # inv_loss = self.invariance_loss(
-    #     #     projections
-    #     # )
-
-    #     # sigreg_loss = self.sigreg(
-    #     #     projections
-    #     # )
-
-    #     # total_loss = (
-    #     #     self.lambda_sigreg * sigreg_loss
-    #     #     + (1.0 - self.lambda_sigreg) * inv_loss
-    #     # )
-
-    #     projections = torch.cat(
-    #         [z1, z2],
-    #         dim=0,
-    #     )
-
-    #     pred_loss = self.prediction_loss(
-    #         z1,
-    #         z2,
-    #     )
-
-    #     # sigreg_loss = self.sigreg(
-    #     #     projections,
-    #     # )
-
-    #     projections = torch.nn.functional.normalize(
-    #         projections,
-    #         dim=1,
-    #     )
-
-    #     sigreg_loss = self.sigreg(projections)
-
-    #     print(
-    #         f"Pred: {pred_loss.item():.4f} "
-    #         f"SIGReg: {sigreg_loss.item():.4f}"
-    #     )
-
-    #     print("z1 std:", z1.std().item())
-    #     print("z2 std:", z2.std().item())
-    #     print(
-    #         "Cos:",
-    #         F.cosine_similarity(z1, z2, dim=1).mean().item()
-    #     )
-
-    #     # total_loss = (
-    #     #     (1.0 - self.lambda_sigreg) * pred_loss
-    #     #     + self.lambda_sigreg * sigreg_loss
-    #     # )
-
-    #     total_loss = pred_loss + 0.001 * sigreg_loss
-
-    #     return total_loss
-
     def compute_loss(
         self,
         view1: torch.Tensor,
@@ -256,74 +149,110 @@ class LeJEPA(BaseSSLModel):
     ) -> torch.Tensor:
         """Compute the LeJEPA invariance and SIGReg objective."""
 
+        # z1 = self.forward(view1)
+        # z2 = self.forward(view2)
+
+        # # ----------------------------------------
+        # # Debug (print only once)
+        # # ----------------------------------------
+        # if not hasattr(self, "_debug_printed"):
+        #     print(
+        #         "Projector cosine:",
+        #         F.cosine_similarity(
+        #             z1,
+        #             z2,
+        #             dim=1,
+        #         ).mean().item()
+        #     )
+
+        #     self._debug_printed = True
+
+        # # ----------------------------------------
+        # projections = torch.stack(
+        #     [z1, z2],
+        #     dim=0,
+        # )
+
+        # invariance_loss = (
+        #     projections - projections.mean(dim=0, keepdim=True)
+        # ).square().mean()
+
+        # sigreg_loss = self.sigreg(
+        #     projections.flatten(0, 1),
+        # )
+
+        # total_loss = (
+        #     (1.0 - self.lambda_sigreg) * invariance_loss
+        #     + self.lambda_sigreg * sigreg_loss
+        # )
+
+
         z1 = self.forward(view1)
         z2 = self.forward(view2)
 
-        # ----------------------------------------
-        # Debug (print only once)
-        # ----------------------------------------
-        if not hasattr(self, "_debug_printed"):
-            print(
-                "Projector cosine:",
-                F.cosine_similarity(
-                    z1,
-                    z2,
-                    dim=1,
-                ).mean().item()
-            )
+        invariance_loss = ((z1 - z2) ** 2).mean()
 
-            self._debug_printed = True
+        pred_loss = self.prediction_loss(
+            z1,
+            z2,
+        )
 
-        # ----------------------------------------
-        projections = torch.stack(
+        projections = torch.cat(
             [z1, z2],
             dim=0,
         )
 
-        invariance_loss = (
-            projections - projections.mean(dim=0, keepdim=True)
-        ).square().mean()
-
-        sigreg_loss = self.sigreg(
-            projections.flatten(0, 1),
+        projections = F.normalize(
+            projections,
+            dim=1,
         )
+
+        sigreg_loss = self.sigreg(projections)
 
         total_loss = (
-            (1.0 - self.lambda_sigreg) * invariance_loss
-            + self.lambda_sigreg * sigreg_loss
+            pred_loss
+            + 0.005 * sigreg_loss
         )
 
-        if not hasattr(self, "_loss_debug_printed"):
+        # ----------------------------------------------------
+        # Print every 10 epochs (only first batch)
+        # ----------------------------------------------------
+        if (
+            self.current_epoch % 10 == 0
+            and not self.debug_printed
+        ):
+
+            cosine = F.cosine_similarity(
+                F.normalize(z1, dim=1),
+                F.normalize(z2, dim=1),
+                dim=1,
+            ).mean()
+
+            print()
+
+            print(f"Epoch {self.current_epoch + 1}")
 
             print(
-                f"Invariance Loss : {invariance_loss.item():.6f}"
+                f"Prediction Loss : {pred_loss.item():.6f}"
             )
 
             print(
-                f"SIGReg Loss : {sigreg_loss.item():.6f}"
+                f"SIGReg Loss     : {sigreg_loss.item():.6f}"
             )
 
             print(
-                "Embedding std :",
-                z1.std(dim=0).mean().item(),
+                f"Cosine Similarity : {cosine.item():.6f}"
             )
 
             print(
-                "Embedding var :",
-                z1.var(dim=0).mean().item(),
+                f"Embedding Std : {z1.std(dim=0).mean().item():.6f}"
             )
 
             print(
-                "Embedding mean:",
-                z1.mean().item(),
+                f"Embedding Norm : {z1.norm(dim=1).mean().item():.6f}"
             )
 
-            print(
-                "Embedding norm:",
-                z1.norm(dim=1).mean().item(),
-            )
-
-            self._loss_debug_printed = True
+            self.debug_printed = True
 
         return total_loss
 
