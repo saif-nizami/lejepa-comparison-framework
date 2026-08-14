@@ -18,6 +18,11 @@ from tqdm import tqdm
 from trainers.checkpoint import save_best_checkpoint
 from trainers.metrics import MetricTracker
 
+from utils.evaluator import Evaluator
+from utils.experiment_logger import ExperimentLogger
+from utils.visualization import EmbeddingVisualizer
+from utils.plotter import Plotter
+
 
 class LinearProbeTrainer:
     """
@@ -325,6 +330,15 @@ class LinearProbeTrainer:
         #     / "linear_probe"
         # )
 
+        history = {
+            "epoch": [],
+            "train_loss": [],
+            "val_loss": [],
+            "train_accuracy": [],
+            "val_accuracy": [],
+            "learning_rate": [],
+        }
+
         for epoch in range(self.epochs):
 
             train = self.train_one_epoch()
@@ -362,5 +376,79 @@ class LinearProbeTrainer:
                 f"Val Loss {val['loss']:.4f} | "
                 f"Val Acc {val['accuracy']:.2f}%"
             )
+
+            history["epoch"].append(epoch + 1)
+            history["train_loss"].append(train["loss"])
+            history["val_loss"].append(val["loss"])
+            history["train_accuracy"].append(train["accuracy"])
+            history["val_accuracy"].append(val["accuracy"])
+            history["learning_rate"].append(self.optimizer.param_groups[0]["lr"])
+
+        # =====================================================
+        # Evaluate Best Model
+        # =====================================================
+
+        evaluator = Evaluator(
+            backbone=self.backbone,
+            classifier=self.classifier,
+            dataloader=self.val_loader,
+            device=self.device,
+            model_name=self.config.model.name,
+            dataset_name=self.config.dataset.name,
+        )
+
+        metrics = evaluator.evaluate()
+
+        visualizer = EmbeddingVisualizer(
+            model_name=self.config.model.name,
+            output_dir="results",
+            dataset_name=self.config.dataset.name,
+        )
+
+        visualizer.generate_all()
+
+        # =====================================================
+        # Save Experiment
+        # =====================================================
+
+        logger = ExperimentLogger(dataset_name=self.config.dataset.name)
+
+        saved_files = logger.log(
+            history=history,
+            model=self.config.model.name,
+            dataset=self.config.dataset.name,
+            ssl_epochs=self.config.training.epochs,
+            probe_epochs=self.config.linear_probe.epochs,
+            train_loss=train["loss"],
+            val_loss=val["loss"],
+            train_accuracy=train["accuracy"],
+            best_val_accuracy=best_acc,
+            precision=metrics["precision"],
+            recall=metrics["recall"],
+            f1_score=metrics["f1_score"],
+            inference_time=metrics["inference_time"],
+            backbone_parameters=metrics["backbone_parameters"],
+            classifier_parameters=metrics["classifier_parameters"],
+            total_parameters=metrics["total_parameters"],
+            learning_rate=self.config.linear_probe.learning_rate,
+            batch_size=self.config.linear_probe.batch_size,
+            optimizer=self.optimizer.__class__.__name__,
+            scheduler=(
+                self.scheduler.__class__.__name__
+                if self.scheduler
+                else "None"
+            ),
+            checkpoint=str(
+                self.checkpoint_dir /
+                "linear_probe_best.pth"
+            ),
+        )
+
+        plotter = Plotter(
+            model_name=self.config.model.name,
+            dataset_name=self.config.dataset.name,
+            history_file=saved_files["history_file"],
+        )
+        plotter.generate_all()
 
         return best_acc
