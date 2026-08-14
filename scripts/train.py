@@ -120,7 +120,8 @@ def main():
         val_split=cfg.dataset.val_split,
         num_workers=cfg.num_workers,
         seed=cfg.seed,
-        ssl=True
+        ssl=True,
+        ssl_method=cfg.model.name,
     )
 
     # ======================================================

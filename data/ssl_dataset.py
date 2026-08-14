@@ -44,6 +44,7 @@ class SSLDataset(Dataset):
         dataset: Dataset,
         transform,
         num_views: int = 2,
+        transform_returns_views: bool = False,
     ) -> None:
 
         if num_views < 2:
@@ -54,6 +55,7 @@ class SSLDataset(Dataset):
         self.dataset = dataset
         self.transform = transform
         self.num_views = num_views
+        self.transform_returns_views = transform_returns_views
 
     def __len__(self) -> int:
         return len(self.dataset)
@@ -76,9 +78,17 @@ class SSLDataset(Dataset):
 
         image, label = self.dataset[index]
 
-        views = tuple(
-            self.transform(image)
-            for _ in range(self.num_views)
-        )
+        if self.transform_returns_views:
+            views = tuple(self.transform(image))
+
+            if len(views) != self.num_views:
+                raise ValueError(
+                    "Multi-view transform returned an unexpected number of views."
+                )
+        else:
+            views = tuple(
+                self.transform(image)
+                for _ in range(self.num_views)
+            )
 
         return views, label

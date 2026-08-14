@@ -167,7 +167,7 @@ barlow_twins:
 
 lejepa:
 
-  lambda_sigreg: 0.02
+  lambda_sigreg: 0.10
 
   num_slices: 256
 

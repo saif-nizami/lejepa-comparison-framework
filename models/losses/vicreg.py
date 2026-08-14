@@ -47,6 +47,20 @@ class VICRegLoss(nn.Module):
             + off_diagonal(cov_y).pow(2).sum() / y.size(1)
         )
 
+        print("repr :", repr_loss.item())
+        print("std  :", std_loss.item())
+        print("cov  :", cov_loss.item())
+
+        assert torch.isfinite(repr_loss)
+        assert torch.isfinite(std_loss)
+        assert torch.isfinite(cov_loss)
+
+        return (
+            self.sim_coeff * repr_loss
+            + self.std_coeff * std_loss
+            + self.cov_coeff * cov_loss
+        )
+
         return (
             self.sim_coeff * repr_loss
             + self.std_coeff * std_loss

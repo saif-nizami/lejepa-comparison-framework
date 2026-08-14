@@ -19,6 +19,7 @@ from torchvision.datasets import CIFAR10, STL10
 from data.splits import train_val_split
 
 from data.ssl_dataset import SSLDataset
+from data.augmentations import get_ssl_augmentation
 
 from data.transform_dataset import TransformDataset
 
@@ -39,6 +40,7 @@ def get_dataloaders(
     num_workers: int = 4,
     seed: int = 42,
     ssl: bool = True,
+    ssl_method: str | None = None,
 ):
     """
     Create train, validation and test dataloaders.
@@ -153,7 +155,19 @@ def get_dataloaders(
     #     transform=train_transform,
     #     num_views=2,
     # )
-    if ssl:
+    if ssl and ssl_method is not None and ssl_method.lower() == "lejepa":
+
+        train_dataset = SSLDataset(
+            dataset=train_dataset,
+            transform=get_ssl_augmentation(
+                method=ssl_method,
+                base_transform=train_transform,
+            ),
+            num_views=2,
+            transform_returns_views=True,
+        )
+
+    elif ssl:
 
         train_dataset = SSLDataset(
             dataset=train_dataset,
