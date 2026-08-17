@@ -1,10 +1,3 @@
-"""
-Self-Supervised Learning dataset wrapper.
-
-Wraps any PyTorch-compatible dataset and returns
-multiple independently augmented views of each image.
-"""
-
 from __future__ import annotations
 
 from typing import Any
@@ -13,31 +6,6 @@ from torch.utils.data import Dataset
 
 
 class SSLDataset(Dataset):
-    """
-    Dataset wrapper for Self-Supervised Learning.
-
-    Parameters
-    ----------
-    dataset : Dataset
-        Base dataset.
-
-    transform
-        Augmentation pipeline.
-
-    num_views : int, default=2
-        Number of augmented views to generate.
-
-    Returns
-    -------
-    tuple
-        (views, label)
-
-    Example
-    -------
-    >>> views, label = dataset[0]
-
-    >>> view1, view2 = views
-    """
 
     def __init__(
         self,

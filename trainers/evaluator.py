@@ -1,7 +1,3 @@
-"""
-Evaluation utilities for downstream classification.
-"""
-
 from __future__ import annotations
 
 from pathlib import Path

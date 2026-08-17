@@ -1,11 +1,3 @@
-"""
-SimCLR implementation.
-
-Paper:
-A Simple Framework for Contrastive Learning of Visual Representations
-(Chen et al., 2020)
-"""
-
 from __future__ import annotations
 from utils.registry import register_ssl_model
 

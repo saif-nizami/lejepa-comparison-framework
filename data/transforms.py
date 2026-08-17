@@ -1,6 +1,4 @@
 """
-Transformation pipelines for Self-Supervised Learning.
-
 Supported Methods:
 - SimCLR
 - BYOL

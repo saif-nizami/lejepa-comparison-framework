@@ -1,10 +1,3 @@
-"""
-Checkpoint utilities.
-
-Provides functions for saving and loading training
-checkpoints.
-"""
-
 from __future__ import annotations
 
 from pathlib import Path
@@ -24,29 +17,6 @@ def save_checkpoint(
     epoch: int,
     loss: float,
 ) -> None:
-    """
-    Save a training checkpoint.
-
-    Parameters
-    ----------
-    path : str | Path
-        Destination checkpoint path.
-
-    model : nn.Module
-        Model to save.
-
-    optimizer : Optimizer
-        Optimizer state.
-
-    scheduler : LRScheduler | None
-        Scheduler state.
-
-    epoch : int
-        Current epoch.
-
-    loss : float
-        Current loss.
-    """
 
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)

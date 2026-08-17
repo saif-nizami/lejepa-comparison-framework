@@ -1,10 +1,3 @@
-"""
-Dataset splitting utilities.
-
-Provides reproducible train/validation splits
-using a fixed random seed.
-"""
-
 from __future__ import annotations
 
 import torch

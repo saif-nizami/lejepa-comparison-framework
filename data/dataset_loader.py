@@ -1,12 +1,7 @@
 """
-Dataset loading utilities.
-
 Supported datasets:
 - CIFAR-10
 - STL-10
-
-Returns reproducible PyTorch DataLoaders for
-training, validation and testing.
 """
 
 from __future__ import annotations
@@ -42,45 +37,6 @@ def get_dataloaders(
     ssl: bool = True,
     ssl_method: str | None = None,
 ):
-    """
-    Create train, validation and test dataloaders.
-
-    Parameters
-    ----------
-    dataset_name : str
-        Dataset name ("cifar10" or "stl10")
-
-    dataset_root : str
-        Dataset directory.
-
-    train_transform
-        Transform applied to training images.
-
-    test_transform
-        Transform applied to validation/test images.
-
-    batch_size : int
-        Batch size.
-
-    val_split : float
-        Validation split ratio.
-
-    num_workers : int
-        Number of DataLoader workers.
-
-    seed : int
-        Random seed for reproducibility.
-
-    Returns
-    -------
-    dict
-        Dictionary containing:
-        {
-            "train": DataLoader,
-            "val": DataLoader,
-            "test": DataLoader
-        }
-    """
 
     dataset_name = dataset_name.lower()
 

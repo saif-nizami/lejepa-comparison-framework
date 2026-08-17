@@ -1,7 +1,3 @@
-"""
-Utilities for saving experiment results.
-"""
-
 from __future__ import annotations
 
 import json

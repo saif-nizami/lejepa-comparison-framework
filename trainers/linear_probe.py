@@ -1,10 +1,3 @@
-"""
-Linear probing trainer.
-
-Trains a linear classifier on top of a frozen
-pretrained backbone.
-"""
-
 from __future__ import annotations
 
 from pathlib import Path

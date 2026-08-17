@@ -1,10 +1,3 @@
-"""
-Shared ResNet-18 backbone for all SSL methods.
-
-The classification layer is removed so that the network
-outputs feature embeddings instead of class predictions.
-"""
-
 from __future__ import annotations
 
 import torch.nn as nn

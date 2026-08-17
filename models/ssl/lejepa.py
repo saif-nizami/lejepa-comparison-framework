@@ -1,16 +1,3 @@
-"""
-LeJEPA: Provable and Scalable Self-Supervised Learning
-Without the Heuristics.
-
-This implementation uses the project's SIGReg loss with the common SSL
-framework used in this project.
-
-Paper:
-LeJEPA: Provable and Scalable Self-Supervised Learning
-Without the Heuristics
-(Balestriero & LeCun, 2025)
-"""
-
 from __future__ import annotations
 
 import torch
@@ -101,26 +88,6 @@ class LeJEPA(BaseSSLModel):
 
         return projections
 
-    # =========================================================
-    # Invariance Loss
-    # =========================================================
-
-    # @staticmethod
-    # def invariance_loss(
-    #     projections: torch.Tensor,
-    # ) -> torch.Tensor:
-    #     """
-    #     Official LeJEPA invariance loss.
-    #     """
-
-    #     return (
-    #         projections.mean(dim=0) - projections
-    #     ).square().mean()
-
-    # =========================================================
-    # Prediction Loss
-    # =========================================================
-
     @staticmethod
     def prediction_loss(
         z1: torch.Tensor,
@@ -147,45 +114,6 @@ class LeJEPA(BaseSSLModel):
         view1: torch.Tensor,
         view2: torch.Tensor,
     ) -> torch.Tensor:
-        """Compute the LeJEPA invariance and SIGReg objective."""
-
-        # z1 = self.forward(view1)
-        # z2 = self.forward(view2)
-
-        # # ----------------------------------------
-        # # Debug (print only once)
-        # # ----------------------------------------
-        # if not hasattr(self, "_debug_printed"):
-        #     print(
-        #         "Projector cosine:",
-        #         F.cosine_similarity(
-        #             z1,
-        #             z2,
-        #             dim=1,
-        #         ).mean().item()
-        #     )
-
-        #     self._debug_printed = True
-
-        # # ----------------------------------------
-        # projections = torch.stack(
-        #     [z1, z2],
-        #     dim=0,
-        # )
-
-        # invariance_loss = (
-        #     projections - projections.mean(dim=0, keepdim=True)
-        # ).square().mean()
-
-        # sigreg_loss = self.sigreg(
-        #     projections.flatten(0, 1),
-        # )
-
-        # total_loss = (
-        #     (1.0 - self.lambda_sigreg) * invariance_loss
-        #     + self.lambda_sigreg * sigreg_loss
-        # )
-
 
         z1 = self.forward(view1)
         z2 = self.forward(view2)

@@ -1,8 +1,4 @@
 """
-Experiment Logger
-
-Automatically stores experiment results for all SSL models.
-
 Outputs
 -------
 results/

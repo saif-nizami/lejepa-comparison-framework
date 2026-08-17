@@ -166,7 +166,7 @@ class BYOL(BaseSSLModel):
 
         return self._forward_online(x)
 
-        # =========================================================
+    # =========================================================
     # BYOL Loss
     # =========================================================
 
@@ -240,22 +240,6 @@ class BYOL(BaseSSLModel):
             self.target_projection,
             momentum=self.momentum,
         )
-
-    # =========================================================
-    # Feature Extraction
-    # =========================================================
-
-    # @torch.no_grad()
-    # def extract_features(
-    #     self,
-    #     x: torch.Tensor,
-    # ) -> torch.Tensor:
-    #     """
-    #     Extract backbone features for
-    #     downstream linear evaluation.
-    #     """
-
-    #     return self.online_backbone(x)
 
     def get_backbone(self) -> nn.Module:
         """

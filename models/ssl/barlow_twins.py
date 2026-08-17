@@ -1,11 +1,3 @@
-"""
-Barlow Twins
-
-Paper:
-Barlow Twins: Self-Supervised Learning via Redundancy Reduction
-(Zbontar et al., 2021)
-"""
-
 from __future__ import annotations
 
 import torch

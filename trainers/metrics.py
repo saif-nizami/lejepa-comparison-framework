@@ -1,26 +1,7 @@
-"""
-Training metrics utilities.
-
-Provides running averages for losses and other metrics.
-"""
-
 from __future__ import annotations
 
 
 class AverageMeter:
-    """
-    Computes and stores the running average of a metric.
-
-    Example
-    -------
-    >>> loss_meter = AverageMeter()
-
-    >>> loss_meter.update(0.52)
-
-    >>> loss_meter.update(0.41)
-
-    >>> print(loss_meter.average)
-    """
 
     def __init__(self) -> None:
         self.reset()
@@ -38,17 +19,6 @@ class AverageMeter:
         value: float,
         n: int = 1,
     ) -> None:
-        """
-        Update running statistics.
-
-        Parameters
-        ----------
-        value : float
-            New metric value.
-
-        n : int
-            Number of samples represented by value.
-        """
 
         self.value = value
         self.sum += value * n

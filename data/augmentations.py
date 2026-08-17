@@ -1,6 +1,4 @@
 """
-Multi-view augmentation utilities for Self-Supervised Learning.
-
 Supported methods:
 - SimCLR
 - BYOL

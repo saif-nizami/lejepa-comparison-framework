@@ -1,11 +1,3 @@
-"""
-Variance-Invariance-Covariance Regularization (VICReg)
-
-Paper:
-Variance-Invariance-Covariance Regularization
-(Bardes et al., 2022)
-"""
-
 from __future__ import annotations
 
 import torch
