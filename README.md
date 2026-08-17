@@ -1,52 +1,45 @@
-# A Comparative Study of Self-Supervised Learning Methods for Image Representation Learning
+# Benchmarking Modern Self-Supervised Learning Methods for Image Representation Learning
 
 <p align="center">
-    <img src="docs/figures/banner.png" width="900">
+  <img src="docs/figures/banner.png" width="900">
 </p>
 
 <p align="center">
 
-![Python](https://img.shields.io/badge/Python-3.11-blue.svg)
-![PyTorch](https://img.shields.io/badge/PyTorch-2.7.1-red.svg)
-![License](https://img.shields.io/badge/License-MIT-green.svg)
-![Platform](https://img.shields.io/badge/Platform-macOS%20%7C%20Linux%20%7C%20Windows-lightgrey.svg)
+![Python](https://img.shields.io/badge/Python-3.11-blue)
+![PyTorch](https://img.shields.io/badge/PyTorch-2.7.1-red)
+![License](https://img.shields.io/badge/License-MIT-green)
+![Platform](https://img.shields.io/badge/Platform-macOS%20%7C%20Linux%20%7C%20Windows-lightgrey)
 
 </p>
 
 ---
 
-## Overview
+# Overview
 
-This repository contains the implementation for the MSc Individual Research Project:
+This repository contains the implementation developed for the MSc Individual Research Project at **Coventry University**.
 
-> **A Comparative Study of Self-Supervised Learning Methods Using a Common ResNet-18 Backbone**
+> **Benchmarking Modern Self-Supervised Learning Methods for Image Representation Learning: A Comparative Study of LeJEPA, SimCLR, BYOL, VICReg, and Barlow Twins**
 
-The project presents a systematic comparison of five modern self-supervised learning (SSL) methods under identical experimental conditions.
+The project provides a unified benchmarking framework for evaluating modern Self-Supervised Learning (SSL) methods under identical experimental conditions.
 
-Unlike many existing comparisons that evaluate methods using different architectures and datasets, this framework uses a **shared ResNet-18 backbone**, identical datasets, and a common evaluation pipeline to enable a fair comparison between SSL objectives.
+Unlike many published comparisons, every model uses:
 
----
+- Common ResNet-18 backbone
+- Identical datasets
+- Same augmentations
+- Same optimizer
+- Same evaluation pipeline
+- Common Linear Probe protocol
 
-## Research Objective
-
-The objective of this project is to investigate how different self-supervised learning strategies influence:
-
-- Representation quality
-- Downstream image classification performance
-- Training stability
-- Convergence behaviour
-- Computational efficiency
-- GPU memory usage
-- Training time
+This ensures a fair comparison between different SSL objectives.
 
 ---
 
-## Implemented Methods
+# Implemented SSL Methods
 
-The following SSL algorithms are implemented.
-
-| Method | Learning Paradigm |
-|---------|------------------|
+| Method | Paradigm |
+|---------|-----------|
 | SimCLR | Contrastive Learning |
 | BYOL | Bootstrap Self-Supervision |
 | VICReg | Variance-Invariance-Covariance Regularization |
@@ -55,102 +48,68 @@ The following SSL algorithms are implemented.
 
 ---
 
-## Backbone
+# Datasets
 
-All experiments use a common
-
-**ResNet-18**
-
-feature extractor to ensure a fair comparison between SSL objectives.
-
----
-
-## Datasets
-
-Supported datasets:
+Supported datasets
 
 - CIFAR-10
 - STL-10
 
-Each dataset is evaluated using identical preprocessing and data augmentation pipelines where appropriate.
-
 ---
 
-## Evaluation Protocol
-
-Each model is evaluated using **Linear Probing**.
-
-The encoder is frozen after SSL pretraining, while a linear classifier is trained using labelled images.
-
-Evaluation metrics include:
-
-- Top-1 Classification Accuracy
-- Training Loss
-- Validation Loss
-- Training Time
-- GPU Memory Usage
-- Convergence Behaviour
-- Feature Representation Quality
-
----
-
-## Repository Structure
+# Repository Structure
 
 ```text
-ssl-comparison/
+ssl-benchmark/
 
-├── configs/
-├── datasets/
-├── checkpoints/
-├── logs/
-├── results/
+configs/
+datasets/
+checkpoints/
+logs/
+results/
 
-├── models/
-│   ├── backbone/
-│   ├── heads/
-│   ├── methods/
-│   └── losses/
+models/
+    backbone/
+    heads/
+    losses/
+    methods/
 
-├── data/
-├── engine/
-├── utils/
-├── scripts/
-├── tests/
+engine/
+scripts/
+utils/
 
-├── requirements.txt
-├── pyproject.toml
-└── README.md
+requirements.txt
+README.md
 ```
 
 ---
 
-## Installation
+# Installation
 
-Clone the repository
+Clone repository
 
 ```bash
-git clone https://github.com/USERNAME/ssl-comparison.git
-
-cd ssl-comparison
+git clone https://github.com/saif-nizami/lejepa-comparison-framework.git
+cd ssl-benchmark
 ```
 
-Create a virtual environment
+Create virtual environment
 
 ```bash
 python3.11 -m venv .venv
 ```
 
-Activate the environment
+Activate
 
-### macOS / Linux
+macOS / Linux
 
 ```bash
 source .venv/bin/activate
 ```
 
-### Windows
+Windows
 
-```bash
+```powershell
 .venv\Scripts\activate
 ```
 
@@ -158,42 +117,48 @@ Install dependencies
 
 ```bash
 pip install --upgrade pip
-
 pip install -r requirements.txt
 ```
 
 ---
 
-## Download Datasets
 
-```bash
-python scripts/download_datasets.py
+
+
+# Project Workflow
+
+```text
+Download Dataset
+        │
+        ▼
+SSL Pretraining
+        │
+        ▼
+Linear Probe Evaluation
+        │
+        ▼
+Performance Metrics
+        │
+        ▼
+t-SNE / UMAP
+        │
+        ▼
+Automatic Report Generation
 ```
-
-Supported:
-
-- CIFAR-10
-- STL-10
 
 ---
 
-## Training
+# Training
 
-Example:
-
-```bash
-python scripts/train.py --config configs/simclr.yaml
-```
-
-or
+Train any SSL model
 
 ```bash
-python scripts/train.py --method simclr
+python scripts.train.py --model simclr --dataset cifar10
 ```
 
-Available methods:
+Available models
 
-```
+```text
 simclr
 byol
 vicreg
@@ -201,79 +166,123 @@ barlow_twins
 lejepa
 ```
 
----
+Available datasets
 
-## Linear Probe Evaluation
+```text
+cifar10
+stl10
+```
+
+
+# Linear Probe Evaluation
+
+Run downstream evaluation
 
 ```bash
-python scripts/linear_probe.py --method simclr
+python scripts.linear_probe --model simclr --dataset cifar10
 ```
 
----
-
-## Compare All Models
+Example
 
 ```bash
-python scripts/benchmark.py
+python scripts.linear_probe --model lejepa --dataset stl10
 ```
-
-This will automatically
-
-- Train all SSL methods
-- Perform linear probing
-- Generate plots
-- Export result tables
 
 ---
 
-## Results
+# Generate Reports
 
-Results are automatically stored inside
+Generate benchmark summaries and plots
 
+```bash
+python scripts.generate_comparison --dataset cifar10
 ```
+
+
+---
+
+
+# Pipeline
+
+- Train SSL model
+- Save checkpoints
+- Linear Probe evaluation
+- Generate metrics
+- Create confusion matrices
+- Generate t-SNE
+- Generate UMAP
+- Export figures
+- Export reports
+
+---
+
+# Results
+
+Results are automatically saved inside
+
+```text
 results/
 
-├── tables/
-├── figures/
-├── confusion_matrices/
-├── embeddings/
-└── reports/
+tables/
+figures/
+embeddings/
+confusion_matrices/
+reports/
+logs/
 ```
 
 ---
 
-## Future Improvements
+# Evaluation Metrics
 
-Potential extensions include:
+The framework evaluates each model using
 
-- Vision Transformer backbones
-- DINOv2
-- MAE
-- ImageNet-100
-- Mixed Precision Training
-- Multi-GPU Support
-- Distributed Training
+- Linear Probe Accuracy
+- Precision
+- Recall
+- F1-score
+- Confusion Matrix
+- t-SNE
+- UMAP
+- Representation Quality
+- Training Loss
+- Validation Loss
 
 ---
 
-## Citation
+---
 
-If you use this repository, please cite:
+# Future Improvements
+
+Potential extensions include
+
+- Vision Transformers (ViT)
+- DINOv2
+- MAE
+- ImageNet
+- Multi-GPU training
+- Mixed Precision
+- Distributed Training
+- Additional SSL algorithms
+
+---
+
+# Citation
 
 ```bibtex
 @mastersthesis{nizami2026,
-  author = {Saif Nizami},
-  title = {A Comparative Study of Self-Supervised Learning Methods Using a Common ResNet-18 Backbone},
-  school = {Coventry University},
-  year = {2026}
+  author  = {Saif Nizami},
+  title   = {Benchmarking Modern Self-Supervised Learning Methods for Image Representation Learning: A Comparative Study of LeJEPA, SimCLR, BYOL, VICReg, and Barlow Twins},
+  school  = {Coventry University},
+  year    = {2026}
 }
 ```
 
 ---
 
-## Acknowledgements
+# Acknowledgements
 
-This work builds upon the research contributions of:
+This project builds upon the pioneering work of the original authors of
 
 - SimCLR
 - BYOL
@@ -281,10 +290,10 @@ This work builds upon the research contributions of:
 - Barlow Twins
 - LeJEPA
 
-Their original authors are fully credited in the dissertation and accompanying documentation.
+Their contributions to Self-Supervised Learning are gratefully acknowledged.
 
 ---
 
-## License
+# License
 
-This project is released under the **MIT License**.
+Released under the MIT License.
